@@ -1,0 +1,97 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+
+# Docker volumes and data
+docker/postgres/data/
+genesis_pgdata/
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# --- Added by GEN_OS migration ---
+# Environment
+node_modules/
+*.pyc
+.env.local
+.env.*.local
+.venv/
+.venv_temp/
+# IDEs
+# Agent logs (don't version temporary logs)
+.gemini/agents/logs/
+.gemini/agents/locks/
+.gemini/brain/daily/
+# Builds
+.next/
+out/
+# Docker
+docker-compose.override.yml
+# Secrets
+*.pem
+*.key
+credentials/
+secrets/
+# Caches
+.mypy_cache/
+.ruff_cache/
+coverage/
+.nyc_output/
+# Logs
+logs/
+# Knowledge Vault
+*.db
+*.sqlite
+data/knowledge_vault.db
+data/knowledge_repo/
+# Team context (temporary, generated)
+.subagents/_team_context.md
+# Agent config sync (encrypted archives — NEVER commit)
+data/secure/
+scripts/setup/agent_config_sync.py
+scripts/setup/_pack_list.txt
+scripts/setup/_unpack_temp/

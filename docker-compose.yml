@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: genesis-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-genesis}
+      POSTGRES_USER: ${POSTGRES_USER:-genesis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-genesis_dev_password}
+    ports:
+      - "${POSTGRES_PORT_HOST:-5432}:5432"
+    volumes:
+      - genesis_pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-genesis} -d ${POSTGRES_DB:-genesis}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mcp-server:
+    build:
+      context: ./services/mcp_server
+    container_name: genesis-mcp-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    ports:
+      - "${API_PORT_HOST:-8080}:${API_PORT:-8080}"
+    command: ["python", "-m", "genesis_mcp.main"]
+
+volumes:
+  genesis_pgdata:

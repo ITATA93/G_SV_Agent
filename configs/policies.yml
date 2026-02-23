@@ -1,0 +1,18 @@
+# Ejemplo de políticas por proyecto (bootstrap)
+project_defaults:
+  allowed_models:
+    - gemini-3-pro
+    - gemini-3-flash
+    - gpt-4o
+    - claude-3-5-sonnet
+  require_redaction_for_embeddings: true
+  require_redaction_for_external_calls: true
+  max_run_cost_usd: 2.50
+  max_run_seconds: 120
+
+skills:
+  execute_sql_safe:
+    mode: read_only
+    timeout_seconds: 5
+  search_web_deep:
+    allow: true
