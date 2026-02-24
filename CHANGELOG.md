@@ -3,19 +3,24 @@ depends_on: []
 impacts: []
 ---
 
-# Changelog â€” G_SV_Agent
+# Changelog — G_SV_Agent
 
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-## [1.1.0] â€” 2026-02-23
+### Added
+- Governance audit: docs/TODO.md created
+- Gemini settings.json verified
+- README.md enhanced with architecture and usage docs
+
+## [1.1.0] — 2026-02-23
 
 ### Added
-- `scripts/deploy-vm101-services.sh` â€” Safe deployment for DOWN services (inventories first, never duplicates).
-- `scripts/verify-services.sh` â€” Health check for all 22 GEN_OS remote services.
-- `docs/ACTIVATION_CHECKLIST.md` â€” Complete activation checklist (automated + manual steps).
+- `scripts/deploy-vm101-services.sh` — Safe deployment for DOWN services (inventories first, never duplicates).
+- `scripts/verify-services.sh` — Health check for all 22 GEN_OS remote services.
+- `docs/ACTIVATION_CHECKLIST.md` — Complete activation checklist (automated + manual steps).
 - Central MCP servers registered in all 15 satellite `.claude/mcp.json` (gen-memory, gen-tasks, gen-workflows, gen-prompts).
 - `GEN_OS-master/.env` created from template with real credentials + generated secrets.
 
@@ -23,7 +28,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `.env`: Replaced placeholder `POSTGREST_JWT` with real 64-char hex secret.
 - `.env`: Commented out unused `GEMINI_API_KEY` and `TAILSCALE_AUTH_KEY` (CLI subscription used).
 
-## [1.0.0] â€” 2026-02-23
+## [1.0.0] — 2026-02-23
 
 ### Added
 - Full GEN_OS mirror infrastructure migrated from AG_SV_Agent.
