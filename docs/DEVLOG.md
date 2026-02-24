@@ -10,6 +10,15 @@ Todo pendiente va a `TASKS.md`.
 
 ---
 
+## 2026-02-24 — Governance Audit + Documentation Enhancement
+
+- Auditoria de gobernanza completada: README.md, CHANGELOG.md, GEMINI.md, .gemini/settings.json verificados
+- GEMINI.md expandido con identidad del proyecto, subagentes, principios, reglas absolutas y clasificador de complejidad
+- Principios de desarrollo especificos: infraestructura como codigo, seguridad PHI, RLS multi-tenant, migraciones reversibles
+- Componentes criticos documentados: Postgres+pgvector, SQL schema, MCP Server (FastAPI)
+
+---
+
 ## 2026-02-23 — GEN_OS Activation Audit & Repair
 
 Full environment verification and repair:
