@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# ============================================================
+# verify-services.sh
+# Health check for all GEN_OS remote services
+# Usage: bash scripts/verify-services.sh
+# ============================================================
+
+set -uo pipefail
+
+echo "============================================"
+echo " GEN_OS - Service Health Check"
+echo " Date: $(date '+%Y-%m-%d %H:%M:%S')"
+echo "============================================"
+echo ""
+
+UP=0
+DOWN=0
+TOTAL=0
+
+check_service() {
+  local name="$1"
+  local url="$2"
+  TOTAL=$((TOTAL + 1))
+
+  STATUS=$(curl -sf -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 10 "$url" 2>/dev/null || echo "000")
+
+  if [[ "$STATUS" =~ ^(200|301|302|303|307|308)$ ]]; then
+    echo "  [UP]   $name ($url) - HTTP $STATUS"
+    UP=$((UP + 1))
+  else
+    echo "  [DOWN] $name ($url) - HTTP $STATUS"
+    DOWN=$((DOWN + 1))
+  fi
+}
+
+echo "--- Core Services ---"
+check_service "n8n"             "https://n8n.imedicina.cl"
+check_service "MIRA NocoBase"   "https://mira.hospitaldeovalle.cl"
+check_service "PostgREST/FHIR"  "https://fhir.imedicina.cl"
+check_service "Gitea"           "https://gitea.imedicina.cl"
+
+echo ""
+echo "--- AI Stack ---"
+check_service "Ollama"          "https://ollama.imedicina.cl"
+check_service "Qdrant"          "https://qdrant.imedicina.cl"
+check_service "Flowise"         "https://flowise.imedicina.cl"
+check_service "Langfuse"        "https://langfuse.imedicina.cl"
+
+echo ""
+echo "--- Monitoring ---"
+check_service "Grafana"         "https://grafana.imedicina.cl"
+check_service "Uptime Kuma"     "https://uptime.imedicina.cl"
+check_service "Prometheus"      "https://prometheus.imedicina.cl"
+
+echo ""
+echo "--- Management ---"
+check_service "Portainer"       "https://portainer.imedicina.cl"
+check_service "Dozzle"          "https://dozzle.imedicina.cl"
+check_service "CloudBeaver"     "https://cloudbeaver.imedicina.cl"
+check_service "MinIO"           "https://minio.imedicina.cl"
+
+echo ""
+echo "--- Apps ---"
+check_service "Node-RED"        "https://nodered.imedicina.cl"
+check_service "Saltcorn"        "https://saltcorn.imedicina.cl"
+check_service "DHIS2"           "https://dhis2.imedicina.cl"
+check_service "Code Server"     "https://code.imedicina.cl"
+
+echo ""
+echo "--- New Services (may be pending deployment) ---"
+check_service "NocoBase (dev)"  "https://nocobase.imedicina.cl"
+check_service "Dify"            "https://dify.imedicina.cl"
+
+echo ""
+echo "--- Proxmox (via tunnel) ---"
+check_service "Proxmox"         "https://proxmox-hetzner.imedicina.cl"
+
+echo ""
+echo "============================================"
+echo " Results: $UP UP / $DOWN DOWN / $TOTAL total"
+echo " Readiness: $(( (UP * 100) / TOTAL ))%"
+echo "============================================"
