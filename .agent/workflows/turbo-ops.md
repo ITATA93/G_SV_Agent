@@ -54,3 +54,24 @@ all operations listed below by setting `SafeToAutoRun: true`.
 - `git reset --hard` — Destructive git operations
 - File modifications outside current project workspace
 - `npm uninstall` / `pip uninstall` — Package removal
+
+---
+
+## Next Tier: Autopilot Mode
+
+Turbo covers safe auto-approvals but still requires user confirmation for
+commits, pushes, and design decisions.
+
+For **fully autonomous execution** (zero intervention), see:
+- Workflow: `.agent/workflows/autopilot.md`
+- Guardrails: `.agent/rules/autopilot-guardrails.md`
+- Slash command: `/autopilot <mission>`
+
+| Feature | Turbo | Autopilot |
+|---|---|---|
+| Read/write ops | auto | auto |
+| git commit | ask | auto (on autopilot/* branch) |
+| git push | ask | auto (autopilot/* only) |
+| Design decisions | ask | Decision Engine (auto) |
+| Rollback | manual | git branch delete |
+| Report | none | post-flight report |

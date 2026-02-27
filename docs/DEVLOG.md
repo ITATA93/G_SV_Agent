@@ -10,6 +10,47 @@ Todo pendiente va a `TASKS.md`.
 
 ---
 
+## 2026-02-26 — NocoBase Deployment (Autopilot)
+
+### Accomplished
+
+- Deployed `mira.imedicina.cl` (NocoBase v1.9.14) on VM101 mapping port 13003.
+- Deployed `mira2.imedicina.cl` (NocoBase v2.0.6) on VM101 mapping port 13002.
+- Configured dedicated postgres databases natively for both instances.
+- Resolved port 13001 conflict natively on VM101.
+
+### Metrics
+
+- Branch: `autopilot/nocobase-deployment`
+- Files changed: 3
+- Status: COMPLETED
+
+---
+
+## 2026-02-26 — Autopilot Mode Implementation
+
+### Accomplished
+
+- Designed and implemented Autopilot mode: fully autonomous execution tier beyond Turbo
+- Created 4 new files: workflow definition, guardrails, mission skill, slash command
+- Defined 7 kill switch boundaries (database ops, force flags, main push, secrets, etc.)
+- Built Decision Engine heuristics (reversible > minimal > conventional > secure > conservative)
+- Added checkpoint system, error loop detection, and post-flight reporting
+- Updated turbo-ops.md with Autopilot comparison table
+- Registered all changes in CHANGELOG.md
+
+### Decisions
+
+- Autopilot uses isolated git branches (`autopilot/*`) instead of working on main — ensures rollback is always a simple branch delete
+- Kill switches are absolute and non-overridable by design — even explicit user requests in the mission brief cannot bypass them
+- Post-flight reports go to conversation + DEVLOG (abbreviated), not separate files — follows output governance
+
+### Metrics
+
+- Files changed: 6 | Lines: +450/-0
+
+---
+
 ## 2026-02-24 — Governance Audit + Documentation Enhancement
 
 - Auditoria de gobernanza completada: README.md, CHANGELOG.md, GEMINI.md, .gemini/settings.json verificados
@@ -24,6 +65,7 @@ Todo pendiente va a `TASKS.md`.
 Full environment verification and repair:
 
 **Diagnostics:**
+
 - 2 services DOWN: NocoBase (dev), Dify
 - 4 MCP servers coded but not deployed
 - GEN_OS-master missing `.env`
@@ -31,6 +73,7 @@ Full environment verification and repair:
 - 3 satellites blocked by manual creds (G_Desktop, G_TaskCenter, G_Lists_Agent)
 
 **Automated fixes:**
+
 - Created `GEN_OS-master/.env` with real credentials + generated secrets
 - Fixed G_SV_Agent `.env` placeholders (PostgREST JWT, Gemini, Tailscale)
 - Registered 4 central MCP servers in 15 satellite `.claude/mcp.json`

@@ -3,7 +3,7 @@ depends_on: []
 impacts: []
 ---
 
-# Changelog — G_SV_Agent
+# Changelog ï¿½ G_SV_Agent
 
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
@@ -11,16 +11,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Autopilot mode**: Fully autonomous execution mode (zero user intervention after mission brief)
+  - `.agent/workflows/autopilot.md` â€” Core workflow: mission brief, pre-flight, execution engine, post-flight report
+  - `.agent/rules/autopilot-guardrails.md` â€” Automatic safety: branch isolation, scope enforcement, kill switches
+  - `.subagents/skills/autopilot-mission.md` â€” Mission parsing skill with natural language constraint detection
+  - `.claude/commands/autopilot.md` â€” `/autopilot` slash command for Claude Code
+- Decision Engine: autonomous choice-making (prefer reversible, minimal, conventional)
+- Kill switch system: 7 hard boundaries that can never be overridden
+- Post-flight reporting: automatic summary of all changes, decisions, and test results
 - Governance audit: docs/TODO.md created
 - Gemini settings.json verified
 - README.md enhanced with architecture and usage docs
 
-## [1.1.0] — 2026-02-23
+## [1.1.0] ï¿½ 2026-02-23
 
 ### Added
-- `scripts/deploy-vm101-services.sh` — Safe deployment for DOWN services (inventories first, never duplicates).
-- `scripts/verify-services.sh` — Health check for all 22 GEN_OS remote services.
-- `docs/ACTIVATION_CHECKLIST.md` — Complete activation checklist (automated + manual steps).
+- `scripts/deploy-vm101-services.sh` ï¿½ Safe deployment for DOWN services (inventories first, never duplicates).
+- `scripts/verify-services.sh` ï¿½ Health check for all 22 GEN_OS remote services.
+- `docs/ACTIVATION_CHECKLIST.md` ï¿½ Complete activation checklist (automated + manual steps).
 - Central MCP servers registered in all 15 satellite `.claude/mcp.json` (gen-memory, gen-tasks, gen-workflows, gen-prompts).
 - `GEN_OS-master/.env` created from template with real credentials + generated secrets.
 
@@ -28,7 +36,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `.env`: Replaced placeholder `POSTGREST_JWT` with real 64-char hex secret.
 - `.env`: Commented out unused `GEMINI_API_KEY` and `TAILSCALE_AUTH_KEY` (CLI subscription used).
 
-## [1.0.0] — 2026-02-23
+## [1.0.0] ï¿½ 2026-02-23
 
 ### Added
 - Full GEN_OS mirror infrastructure migrated from AG_SV_Agent.
