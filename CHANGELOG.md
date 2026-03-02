@@ -11,6 +11,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **`src/` server agent module** -- Python package for infrastructure management
+  - `src/__init__.py` -- Package init with version, exports
+  - `src/agent.py` -- `ServerAgent` class: `check_services()`, `deploy_service()`, `restart_service()`, `start_service()`, `stop_service()`, `get_logs()`, `list_containers()`, `container_status()`, `test_connectivity()`, `disk_usage()`
+  - `src/health.py` -- `HealthChecker` with all 22 services, external HTTPS and internal SSH checks, `HealthReport` with JSON export
+  - `src/config.py` -- `Config` dataclass loader from `.env` with typed sub-configs (`PostgresConfig`, `SSHConfig`, `LangfuseConfig`)
+- **`scripts/fix_prometheus.sh`** -- Restart Prometheus container on VM101 via SSH and verify health
+- **`scripts/init_portainer.sh`** -- Reset and initialize Portainer admin account on VM101 via API
+- **`docs/CREDENTIAL_SETUP.md`** -- Step-by-step guide for obtaining all 6 external credentials: Langfuse, Notion, Azure AD, Gmail OAuth, Tailscale, Docker Desktop
+- **`.env.example` expanded** -- Added 15 new placeholder variables: Langfuse, Notion, Azure AD, Gmail OAuth, Tailscale, Portainer, Prometheus, PostgREST JWT, VM101 SSH config
 - **Autopilot mode**: Fully autonomous execution mode (zero user intervention after mission brief)
   - `.agent/workflows/autopilot.md` — Core workflow: mission brief, pre-flight, execution engine, post-flight report
   - `.agent/rules/autopilot-guardrails.md` — Automatic safety: branch isolation, scope enforcement, kill switches

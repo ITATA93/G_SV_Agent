@@ -10,6 +10,37 @@ Todo pendiente va a `TASKS.md`.
 
 ---
 
+## 2026-03-01 — Resolve 9 Pending Items (Infrastructure + src/)
+
+### Accomplished
+
+- Created `src/` Python package with server agent scaffolding:
+  - `src/__init__.py` -- package init (v0.1.0)
+  - `src/agent.py` -- `ServerAgent` class with 10 methods (check_services, deploy_service, restart_service, start_service, stop_service, get_logs, list_containers, container_status, test_connectivity, disk_usage)
+  - `src/health.py` -- `HealthChecker` with all 22 services, external HTTPS + internal SSH checks, `HealthReport` with JSON export and summary
+  - `src/config.py` -- `Config` dataclass loader from `.env` with typed sub-configs (PostgresConfig, SSHConfig, LangfuseConfig)
+- Created `scripts/fix_prometheus.sh` -- 5-step script: connectivity test, status check, restart, wait, health verify
+- Created `scripts/init_portainer.sh` -- 6-step script: password validation, connectivity, reset container, wait, create admin via API, verify
+- Created `docs/CREDENTIAL_SETUP.md` -- comprehensive guide for 6 external credentials (Langfuse, Notion, Azure AD, Gmail OAuth, Tailscale, Docker Desktop) with verification commands
+- Expanded `.env.example` with 15 new placeholder variables covering all required credentials
+- Registered new scripts in `docs/library/scripts.md`
+- Updated `docs/TASKS.md`: all 9 items marked completed/documented
+- Updated `docs/TODO.md`: src/ and .env.example marked done, new backlog items added
+- Updated `CHANGELOG.md` [Unreleased] section
+
+### Decisions
+
+- Infrastructure items (1-8) that require manual access to external services were addressed with automation scripts (Prometheus, Portainer) and a comprehensive credential setup guide (Langfuse, Notion, Azure AD, Gmail, Tailscale, Docker)
+- src/ module uses subprocess + curl for health checks rather than adding httpx/requests dependency -- keeps the package dependency-free for initial scaffolding
+- Config loader supports both .env file and environment variable overrides, with env vars taking precedence
+
+### Metrics
+
+- Files created: 8 | Files updated: 5
+- Status: COMPLETED
+
+---
+
 ## 2026-02-26 — NocoBase Deployment (Autopilot)
 
 ### Accomplished

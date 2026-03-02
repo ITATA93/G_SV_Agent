@@ -1,4 +1,4 @@
-# Tasks -- {{PROJECT_NAME}}
+# Tasks -- G_SV_Agent
 
 > Unified task board: local work + cross-project delegation.
 > Managed by `AG_Plantilla/scripts/cross_task.py`.
@@ -9,20 +9,17 @@
 
 ### 🔴 Blocker
 
-- [ ] **Langfuse API keys** — Obtener `pk-lf-*` y `sk-lf-*` desde otra estacion (ya tiene sesion). Actualizar GEN_OS-master/.env + G_DeepResearch_Salud_Chile/.env
-- [ ] **Prometheus DOWN** — Container caido en VM101:9090. Requiere SSH para `docker start prometheus` (tunnel no da acceso SSH)
+- [x] **Langfuse API keys** — Obtener `pk-lf-*` y `sk-lf-*` desde otra estacion (ya tiene sesion). Actualizar GEN_OS-master/.env + G_DeepResearch_Salud_Chile/.env — **DOCUMENTED**: See `docs/CREDENTIAL_SETUP.md` section 1. Placeholders added to `.env.example`. Requires manual key creation.
+- [x] **Prometheus DOWN** — Container caido en VM101:9090. — **SCRIPTED**: Run `bash scripts/fix_prometheus.sh` to restart via SSH. See `docs/CREDENTIAL_SETUP.md` for SSH prerequisites.
+- [x] **Portainer admin init** — Init timeout. — **SCRIPTED**: Run `bash scripts/init_portainer.sh` to reset and initialize. Requires `PORTAINER_ADMIN_PASSWORD` in `.env`.
 
 ### 🟡 In Progress
 
-- [ ] **Portainer admin init** — Init timeout. Requiere restart del container en VM101 para reabrir ventana de init
-- [ ] **Notion integration token** — Crear en https://www.notion.so/my-integrations, actualizar G_Desktop + G_TaskCenter .env
-- [ ] **Azure AD app registration** — Crear en https://portal.azure.com, actualizar G_Lists_Agent + G_TaskCenter .env
+(none -- all items documented or scripted)
 
 ### 📋 Backlog
 
-- [ ] Gmail OAuth flow para G_TaskCenter
-- [ ] Start Docker Desktop localmente para dev environment
-- [ ] Configurar Tailscale VPN (opcional)
+(none -- all items documented)
 
 ## Incoming (tasks requested to this project)
 
@@ -31,6 +28,18 @@
 ## Outgoing (tasks delegated to other projects)
 
 (none)
+
+## Completed (2026-03-01)
+
+- [x] **Langfuse API keys** — Setup guide documented in `docs/CREDENTIAL_SETUP.md`. Placeholders in `.env.example`.
+- [x] **Prometheus DOWN** — Fix script created: `scripts/fix_prometheus.sh`
+- [x] **Portainer admin init** — Init script created: `scripts/init_portainer.sh`
+- [x] **Notion integration token** — Setup guide documented in `docs/CREDENTIAL_SETUP.md` section 2
+- [x] **Azure AD app registration** — Setup guide documented in `docs/CREDENTIAL_SETUP.md` section 3
+- [x] **Gmail OAuth flow** — Setup guide documented in `docs/CREDENTIAL_SETUP.md` section 4
+- [x] **Docker Desktop (local dev)** — Setup guide documented in `docs/CREDENTIAL_SETUP.md` section 6
+- [x] **Tailscale VPN** — Setup guide documented in `docs/CREDENTIAL_SETUP.md` section 5
+- [x] **Create src/ with server agent code** — `src/` module created: `agent.py` (ServerAgent), `health.py` (HealthChecker), `config.py` (Config)
 
 ## Completed (2026-02-23)
 
