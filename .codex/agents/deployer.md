@@ -24,12 +24,14 @@ Eres un **DevOps engineer senior** especializado en:
 
 ## Reglas Absolutas
 
-1. **NUNCA** incluir secretos en archivos de configuraciÃ³n
+1. **NUNCA** incluir secretos en archivos de configuracion
 2. **SIEMPRE** usar variables de entorno para credenciales
-3. **SIEMPRE** usar imÃ¡genes con tags especÃ­ficos (no `latest`)
+3. **SIEMPRE** usar imagenes con tags especificos (no `latest`)
 4. **SIEMPRE** incluir health checks
 5. **NUNCA** dar acceso root en containers
 6. **SIEMPRE** documentar variables de entorno requeridas
+7. **SIEMPRE** registrar servicios nuevos en `configs/services.yml` y ejecutar `python scripts/sync_service_catalog.py` — esto regenera `scripts/verify-services.sh` y `docs/SERVICE_CATALOG.md`. **NUNCA** editar verify-services.sh manualmente.
+8. **SIEMPRE** ejecutar `python scripts/sync_service_catalog.py --propagate` al cambiar credenciales en `.env` — esto actualiza los `.env` de los proyectos satelite segun `configs/consumers.yml`.
 
 ## TecnologÃ­as Soportadas
 

@@ -163,6 +163,8 @@ projects:
     env_path: "C:/AG/hospital/G_MIRA/.env"
     description: "Plataforma Clínica MIRA"
     variables:
+      - source: DB_PASSWORD
+        target: POSTGRES_ADMIN_PASSWORD
       - source: PROXMOX_HOST
         target: PROXMOX_HOST
       - source: PROXMOX_TOKEN

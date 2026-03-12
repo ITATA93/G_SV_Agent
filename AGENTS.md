@@ -29,3 +29,8 @@ Agents for this project are defined in `.subagents/manifest.json`.
 bash .subagents/dispatch.sh <agent-id> "<prompt>"
 bash .subagents/dispatch-team.sh <team-id> "<prompt>"
 ```
+
+## Service Registry
+All 24 infrastructure services are registered in `configs/services.yml` (Single Source of Truth).
+When deploying/removing/modifying services: edit `configs/services.yml`, then run `python scripts/sync_service_catalog.py`.
+Full catalog: `docs/SERVICE_CATALOG.md`.

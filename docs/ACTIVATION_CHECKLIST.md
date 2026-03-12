@@ -1,6 +1,7 @@
 ---
 depends_on:
   - CHANGELOG.md
+  - configs/services.yml
 impacts:
   - docs/TASKS.md
 ---
@@ -8,7 +9,8 @@ impacts:
 # GEN_OS Activation Checklist
 
 > Generated: 2026-02-23
-> Status: In Progress
+> Updated: 2026-03-02
+> Status: Mostly Complete (manual browser items pending)
 
 ## Automated (Already Done)
 
@@ -17,19 +19,21 @@ impacts:
 - [x] **MCP servers registered** in all 15 satellite `.claude/mcp.json` (gen-memory, gen-tasks, gen-workflows, gen-prompts)
 - [x] **MCP Python dependencies** installed locally (mcp[cli], psycopg, pgvector, sentence-transformers, pydantic)
 - [x] **VM101 deployment script** created: `scripts/deploy-vm101-services.sh` (safe, no duplicates)
-- [x] **Service health check script** created: `scripts/verify-services.sh`
+- [x] **Service health check script** created: `scripts/verify-services.sh` (auto-generated from configs/services.yml)
 - [x] **Secrets generated** for new services (ClickHouse, Langfuse, Dify, code-server)
+- [x] **Service catalog** created: `configs/services.yml` — Single Source of Truth for 24 services
+- [x] **Sync script** created: `scripts/sync_service_catalog.py` — auto-generates verify-services.sh + docs/SERVICE_CATALOG.md
 
-## Requires SSH to VM101
+## VM101 Deployments (Completed 2026-02-26)
 
-Run: `bash scripts/deploy-vm101-services.sh`
-
-- [ ] **NocoBase (dev)** — restart container on VM101 (nocobase.imedicina.cl DOWN)
-- [ ] **Dify** — deploy new containers (dify.imedicina.cl DOWN)
+- [x] **NocoBase (dev)** — running on port 13000 (nocobase.imedicina.cl)
+- [x] **MIRA NocoBase** — deployed v1.9.14 on port 13003 (mira.hospitaldeovalle.cl)
+- [x] **MIRA2 NocoBase** — deployed v2.0.6 on port 13002 (mira2.imedicina.cl)
+- [x] **Dify** — deployed containers (dify.imedicina.cl)
   - ag-dify-api, ag-dify-web, ag-dify-worker
-- [ ] **ClickHouse** — deploy ag-clickhouse (Langfuse OLAP backend)
-- [ ] **Langfuse workers** — deploy ag-langfuse-web, ag-langfuse-worker
-- [ ] **code-server** — deploy ag-code-server (optional, already UP via tunnel)
+- [x] **ClickHouse** — deployed ag-clickhouse (Langfuse OLAP backend, port 8123)
+- [x] **Langfuse workers** — deployed ag-langfuse-web, ag-langfuse-worker
+- [x] **code-server** — deployed ag-code-server (code.imedicina.cl)
 
 ## Requires Manual Browser/Portal Access
 
@@ -70,4 +74,5 @@ Run: `bash scripts/deploy-vm101-services.sh`
 
 Run: `bash scripts/verify-services.sh`
 
-Expected: 22/22 services UP, 100% readiness
+Expected: 23/23 external services UP (ClickHouse is internal-only), 100% readiness
+Full catalog: `docs/SERVICE_CATALOG.md` (24 services total)

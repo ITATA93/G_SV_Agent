@@ -35,6 +35,32 @@ Docker/Hetzner y servidor MCP.
 8. **Descubrimiento Antes de Creacion**: Verifica agentes/skills/workflows existentes antes de crear nuevos (ROUTING.md S5)
 9. **Sigue** las reglas de gobernanza de output (`docs/standards/output_governance.md`)
 10. **Integridad de referencias cruzadas**: Verifica frontmatter `impacts:` antes de finalizar ediciones
+11. **Registro de Servicios (OBLIGATORIO)**: Al desplegar/eliminar/modificar servicios, seguir el procedimiento abajo
+
+## Regla de Registro de Servicios
+
+`configs/services.yml` es la **fuente unica de verdad** para los 24 servicios de infraestructura.
+Al desplegar, eliminar o modificar cualquier servicio:
+
+1. Editar `configs/services.yml`
+2. Ejecutar `python scripts/sync_service_catalog.py` — regenera:
+   - `scripts/verify-services.sh` (health check)
+   - `docs/SERVICE_CATALOG.md` (catalogo)
+3. Actualizar `.env` si hay credenciales/URLs nuevas
+4. Hacer commit de todos los archivos generados + modificados
+
+**NUNCA** editar `scripts/verify-services.sh` manualmente — es auto-generado.
+
+## Regla de Propagacion de Credenciales
+
+`configs/consumers.yml` define que variables de `.env` necesita cada proyecto satelite.
+Cuando cambien credenciales en G_SV_Agent/.env:
+
+1. Ejecutar `python scripts/sync_service_catalog.py --propagate`
+2. Esto actualiza los `.env` de: G_Dashboard, G_Plantilla, G_Orion, GEN_OS-master
+3. Hacer commit en cada proyecto satelite afectado
+
+Tambien disponible: `--propagate-only` (solo credenciales, sin regenerar catalogo).
 
 ## Clasificador de Complejidad
 

@@ -10,6 +10,45 @@ Todo pendiente va a `TASKS.md`.
 
 ---
 
+## 2026-03-02 — Truthful Documentation + Service Auto-Sync + Credential Propagation
+
+### Accomplished
+
+- Created `configs/services.yml` — Single Source of Truth for all 24 infrastructure services
+- Created `scripts/sync_service_catalog.py` — auto-generates `verify-services.sh` + `docs/SERVICE_CATALOG.md`
+- Refactored `src/health.py` to load services from YAML instead of hardcoded list
+- Added MIRA NocoBase (v1.9.14, port 13003) and MIRA2 NocoBase (v2.0.6, port 13002) to `.env` and registry
+- Added ClickHouse (port 8123) to service registry (was missing from health checks)
+- Corrected `docs/ACTIVATION_CHECKLIST.md` — marked VM101 deployments as completed (were incorrectly shown as DOWN)
+- Rewrote `docs/OPERATIONS.md` from 22-line stub to comprehensive production operations guide
+- Generated `docs/SERVICE_CATALOG.md` with full service table, NocoBase detail, port map
+- Reorganized `.env.example` into Local Dev / Production / External Integrations sections
+- Added Service Registration rule to `.agent/rules/project-rules.md`
+- Updated session-protocol, update-docs command, project-status command, auto-memory.sh with infra sync triggers
+- Registered `sync_service_catalog.py` in `docs/library/scripts.md`
+- Created `configs/consumers.yml` — maps 5 satellite projects to their credential dependencies
+- Added `--propagate` and `--propagate-only` flags to `sync_service_catalog.py`
+- Implemented transform support: `external_url` resolves from services.yml, `internal_url` passes through
+- Updated CLAUDE.md, GEMINI.md, deployer.md, project-rules.md, session-protocol.md with propagation rule
+- Propagated credentials to G_Dashboard, G_Plantilla, GEN_OS-master (G_Orion skipped — no .env yet)
+
+### Decisions
+
+- `configs/services.yml` is the canonical registry; all other service lists are derived from it
+- `configs/consumers.yml` defines satellite credential dependencies — single place to add new consumers
+- Simple YAML parser in Python avoids PyYAML dependency while supporting full services.yml structure
+- ClickHouse has no external URL (internal-only OLAP backend), so verify-services.sh checks 23 external endpoints
+- Service count is 24 (was incorrectly stated as 22 — missing MIRA2 and ClickHouse)
+- Transform `external_url` resolves via service name keyword matching against services.yml
+- PROXMOX_TOKEN format removed from consumers.yml — master .env already stores the full auth string
+
+### Metrics
+
+- Files created: 5 | Files updated: 16+
+- Status: COMPLETED
+
+---
+
 ## 2026-03-01 — Resolve 9 Pending Items (Infrastructure + src/)
 
 ### Accomplished

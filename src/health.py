@@ -1,9 +1,11 @@
 """
 Health check utilities for GEN_OS services.
 
-Provides programmatic health checking for all 22+ services running on VM101
+Provides programmatic health checking for all services running on VM100/VM101
 and accessible via the imedicina.cl reverse proxy. Can check services both
-via HTTPS (external) and via SSH to VM101 (internal ports).
+via HTTPS (external) and via SSH to VMs (internal ports).
+
+Service definitions are loaded from configs/services.yml (Single Source of Truth).
 """
 
 from __future__ import annotations
@@ -13,11 +15,15 @@ import json
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import Optional
 
 from src.config import Config
 
 logger = logging.getLogger(__name__)
+
+# Path to the canonical service registry
+_SERVICES_YAML = Path(__file__).resolve().parent.parent / "configs" / "services.yml"
 
 
 class ServiceStatus(Enum):
@@ -102,39 +108,122 @@ class HealthReport:
 
 
 # ---------------------------------------------------------------
-# Service definitions: all 22 GEN_OS services
+# Load service definitions from configs/services.yml
 # ---------------------------------------------------------------
-SERVICES: list[dict[str, str]] = [
-    # Core
-    {"name": "n8n", "url": "https://n8n.imedicina.cl", "category": "Core"},
-    {"name": "MIRA NocoBase", "url": "https://mira.hospitaldeovalle.cl", "category": "Core"},
-    {"name": "PostgREST/FHIR", "url": "https://fhir.imedicina.cl", "category": "Core"},
-    {"name": "Gitea", "url": "https://gitea.imedicina.cl", "category": "Core"},
-    # AI Stack
-    {"name": "Ollama", "url": "https://ollama.imedicina.cl", "category": "AI"},
-    {"name": "Qdrant", "url": "https://qdrant.imedicina.cl", "category": "AI"},
-    {"name": "Flowise", "url": "https://flowise.imedicina.cl", "category": "AI"},
-    {"name": "Langfuse", "url": "https://langfuse.imedicina.cl", "category": "AI"},
-    # Monitoring
-    {"name": "Grafana", "url": "https://grafana.imedicina.cl", "category": "Monitoring"},
-    {"name": "Uptime Kuma", "url": "https://uptime.imedicina.cl", "category": "Monitoring"},
-    {"name": "Prometheus", "url": "https://prometheus.imedicina.cl", "category": "Monitoring"},
-    # Management
-    {"name": "Portainer", "url": "https://portainer.imedicina.cl", "category": "Management"},
-    {"name": "Dozzle", "url": "https://dozzle.imedicina.cl", "category": "Management"},
-    {"name": "CloudBeaver", "url": "https://cloudbeaver.imedicina.cl", "category": "Management"},
-    {"name": "MinIO", "url": "https://minio.imedicina.cl", "category": "Management"},
-    # Apps
-    {"name": "Node-RED", "url": "https://nodered.imedicina.cl", "category": "Apps"},
-    {"name": "Saltcorn", "url": "https://saltcorn.imedicina.cl", "category": "Apps"},
-    {"name": "DHIS2", "url": "https://dhis2.imedicina.cl", "category": "Apps"},
-    {"name": "Code Server", "url": "https://code.imedicina.cl", "category": "Apps"},
-    # New Services
-    {"name": "NocoBase (dev)", "url": "https://nocobase.imedicina.cl", "category": "New"},
-    {"name": "Dify", "url": "https://dify.imedicina.cl", "category": "New"},
-    # Infrastructure
-    {"name": "Proxmox", "url": "https://proxmox-hetzner.imedicina.cl", "category": "Infrastructure"},
-]
+
+def _parse_yaml_simple(path: Path) -> list[dict]:
+    """Parse the services YAML without requiring PyYAML.
+
+    Handles the flat list-of-dicts structure used in configs/services.yml.
+    Falls back gracefully if the file is missing.
+    """
+    if not path.exists():
+        logger.warning("services.yml not found at %s — using empty list", path)
+        return []
+
+    services: list[dict] = []
+    current: dict | None = None
+    text = path.read_text(encoding="utf-8")
+
+    for line in text.splitlines():
+        stripped = line.strip()
+        # Skip comments and blank lines
+        if not stripped or stripped.startswith("#"):
+            continue
+        # New list item
+        if stripped.startswith("- "):
+            if current is not None:
+                services.append(current)
+            current = {}
+            # The first key-value pair is on the same line as "- "
+            kv = stripped[2:].strip()
+            if ":" in kv:
+                key, val = kv.split(":", 1)
+                current[key.strip()] = _parse_yaml_value(val.strip())
+        elif ":" in stripped and current is not None:
+            key, val = stripped.split(":", 1)
+            current[key.strip()] = _parse_yaml_value(val.strip())
+
+    if current is not None:
+        services.append(current)
+
+    return services
+
+
+def _parse_yaml_value(val: str):
+    """Convert a YAML scalar value to a Python type."""
+    if not val or val == "null":
+        return None
+    if val in ("true", "True"):
+        return True
+    if val in ("false", "False"):
+        return False
+    # Remove surrounding quotes
+    if (val.startswith('"') and val.endswith('"')) or \
+       (val.startswith("'") and val.endswith("'")):
+        return val[1:-1]
+    # Try int
+    try:
+        return int(val)
+    except ValueError:
+        pass
+    return val
+
+
+def load_services(path: Path | None = None) -> list[dict[str, str]]:
+    """Load the service catalog from configs/services.yml.
+
+    Returns a list of dicts with at least: name, url (url_external), category.
+    Services without an external URL (e.g. ClickHouse) are included with url=None.
+    Only deployed services are included.
+    """
+    if path is None:
+        path = _SERVICES_YAML
+
+    try:
+        import yaml  # type: ignore[import-untyped]
+        with open(path, encoding="utf-8") as f:
+            raw = yaml.safe_load(f)
+    except ImportError:
+        raw = _parse_yaml_simple(path)
+    except Exception as exc:
+        logger.warning("Failed to load services.yml via PyYAML: %s — trying simple parser", exc)
+        raw = _parse_yaml_simple(path)
+
+    if not raw:
+        return []
+
+    services = []
+    for entry in raw:
+        if not entry.get("deployed", True):
+            continue
+        services.append({
+            "name": entry.get("name", "unknown"),
+            "url": entry.get("url_external") or "",
+            "category": entry.get("category", "Other"),
+            "port_internal": entry.get("port_internal"),
+            "vm": entry.get("vm"),
+            "container": entry.get("container"),
+        })
+    return services
+
+
+def load_internal_services(path: Path | None = None) -> list[tuple[str, int]]:
+    """Load services with internal ports for SSH-based health checks.
+
+    Returns list of (name, port) tuples for all deployed services with a port_internal.
+    """
+    all_services = load_services(path)
+    result = []
+    for svc in all_services:
+        port = svc.get("port_internal")
+        if port and isinstance(port, int):
+            result.append((svc["name"], port))
+    return result
+
+
+# Module-level SERVICES loaded at import time for backward compatibility
+SERVICES: list[dict[str, str]] = load_services()
 
 
 class HealthChecker:
@@ -291,6 +380,8 @@ class HealthChecker:
         """
         Check all registered services via their external HTTPS URLs.
 
+        Only checks services that have an external URL.
+
         Args:
             timeout: Per-service timeout in seconds.
 
@@ -299,6 +390,8 @@ class HealthChecker:
         """
         report = HealthReport()
         for svc in SERVICES:
+            if not svc.get("url"):
+                continue
             logger.info("Checking %s at %s", svc["name"], svc["url"])
             check = self.check_url(svc["url"], svc["name"], timeout=timeout)
             report.checks.append(check)
@@ -306,9 +399,9 @@ class HealthChecker:
 
     def check_all_internal(self, timeout: int = 10) -> HealthReport:
         """
-        Check key services via SSH to VM101 internal ports.
+        Check services via SSH to VM internal ports.
 
-        Only checks services with known internal ports.
+        Loads port mappings from configs/services.yml.
 
         Args:
             timeout: Per-service timeout in seconds.
@@ -316,25 +409,10 @@ class HealthChecker:
         Returns:
             A HealthReport with results for checked services.
         """
-        internal_services = [
-            ("PostgreSQL", 5432),
-            ("NocoBase", 13000),
-            ("n8n", 3101),
-            ("Gitea", 3200),
-            ("Grafana", 3030),
-            ("MinIO Console", 9001),
-            ("Flowise", 3100),
-            ("Prometheus", 9090),
-            ("Portainer", 9443),
-            ("ClickHouse", 8123),
-            ("Langfuse", 3400),
-            ("Dify Web", 3401),
-            ("Dify API", 5001),
-            ("code-server", 8443),
-        ]
+        internal_services = load_internal_services()
         report = HealthReport()
         for name, port in internal_services:
-            logger.info("Checking %s at VM101:%d", name, port)
+            logger.info("Checking %s at VM:%d", name, port)
             check = self.check_internal(name, port, timeout=timeout)
             report.checks.append(check)
         return report
