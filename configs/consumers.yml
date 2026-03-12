@@ -1,0 +1,175 @@
+# ============================================================
+# configs/consumers.yml — Mapeo de proyectos satélite a servicios
+#
+# Define qué variables de .env cada proyecto necesita de la
+# infraestructura central. Usado por sync_service_catalog.py
+# con --propagate para actualizar los .env de los satélites.
+#
+# Regla: Cuando cambien credenciales en G_SV_Agent/.env,
+# ejecutar: python scripts/sync_service_catalog.py --propagate
+#
+# Última actualización: 2026-03-02
+# ============================================================
+
+# Ruta base del ecosistema (relativa a G_SV_Agent o absoluta)
+ecosystem_root: "c:/_Gen_OS"
+
+# Variables compartidas que se leen del .env maestro de G_SV_Agent
+# y se propagan a los satélites según su mapeo
+shared_credentials:
+  # PostgreSQL
+  DB_HOST: DB_HOST
+  DB_PORT: DB_PORT
+  DB_USER: DB_USER
+  DB_PASSWORD: DB_PASSWORD
+
+  # n8n
+  N8N_BASE_URL: N8N_BASE_URL
+  N8N_WEBHOOK_URL: N8N_WEBHOOK_URL
+  N8N_API_KEY: N8N_API_KEY
+
+  # Proxmox
+  PROXMOX_HOST: PROXMOX_HOST
+  PROXMOX_TOKEN: PROXMOX_TOKEN
+  PROXMOX_NODE: PROXMOX_NODE
+
+  # Cloudflare
+  CLOUDFLARE_ACCOUNT_ID: CLOUDFLARE_ACCOUNT_ID
+  CLOUDFLARE_ZONE_ID: CLOUDFLARE_ZONE_ID
+  CLOUDFLARE_API_TOKEN: CLOUDFLARE_API_TOKEN
+
+  # Grafana
+  GRAFANA_URL: GRAFANA_URL
+  GRAFANA_ADMIN_USER: GRAFANA_ADMIN_USER
+  GRAFANA_ADMIN_PASSWORD: GRAFANA_ADMIN_PASSWORD
+
+  # Ollama
+  OLLAMA_BASE_URL: OLLAMA_BASE_URL
+
+  # Langfuse
+  LANGFUSE_BASE_URL: NOCOBASE_BASE_URL
+  LANGFUSE_HOST: NOCOBASE_BASE_URL
+
+  # MinIO
+  MINIO_USER: MINIO_ROOT_USER
+  MINIO_PASSWORD: MINIO_ROOT_PASSWORD
+
+  # NocoBase
+  NOCOBASE_BASE_URL: NOCOBASE_BASE_URL
+  NOCOBASE_MIRA_URL: NOCOBASE_MIRA_URL
+  NOCOBASE_MIRA2_URL: NOCOBASE_MIRA2_URL
+
+# Proyectos consumidores y las variables que necesitan
+projects:
+
+  G_Dashboard:
+    env_path: "G_Dashboard/.env"
+    description: "Central monitoring dashboard"
+    variables:
+      # Proxmox
+      - source: PROXMOX_HOST
+        target: PROXMOX_HOST
+      - source: PROXMOX_TOKEN
+        target: PROXMOX_TOKEN
+      - source: PROXMOX_NODE
+        target: PROXMOX_NODE
+      # n8n
+      - source: N8N_BASE_URL
+        target: N8N_BASE_URL
+      - source: N8N_API_KEY
+        target: N8N_API_KEY
+      # Monitoring
+      - source: GRAFANA_URL
+        target: GRAFANA_URL
+        transform: external_url
+      - source: GRAFANA_ADMIN_USER
+        target: GRAFANA_ADMIN_USER
+      - source: GRAFANA_ADMIN_PASSWORD
+        target: GRAFANA_ADMIN_PASSWORD
+      # Cloudflare
+      - source: CLOUDFLARE_ACCOUNT_ID
+        target: CLOUDFLARE_ACCOUNT_ID
+      - source: CLOUDFLARE_ZONE_ID
+        target: CLOUDFLARE_ZONE_ID
+      - source: CLOUDFLARE_API_TOKEN
+        target: CLOUDFLARE_API_TOKEN
+      # AI
+      - source: OLLAMA_BASE_URL
+        target: OLLAMA_BASE_URL
+        transform: external_url
+      # Database
+      - source: DB_HOST
+        target: DB_HOST
+      - source: DB_PORT
+        target: DB_PORT
+      - source: DB_USER
+        target: DB_USER
+      - source: DB_PASSWORD
+        target: DB_PASSWORD
+
+  G_Plantilla:
+    env_path: "G_Plantilla/.env"
+    description: "Base template for new projects"
+    variables:
+      - source: DB_HOST
+        target: DB_HOST
+      - source: DB_PORT
+        target: DB_PORT
+      - source: DB_USER
+        target: DB_USER
+      - source: DB_PASSWORD
+        target: DB_PASSWORD
+      - source: N8N_BASE_URL
+        target: N8N_BASE_URL
+      - source: N8N_WEBHOOK_URL
+        target: N8N_WEBHOOK_URL
+      - source: OLLAMA_BASE_URL
+        target: OLLAMA_BASE_URL
+        transform: external_url
+
+  G_Orion:
+    env_path: "G_Orion/.env"
+    description: "Orchestration engine"
+    variables:
+      - source: DB_PASSWORD
+        target: DB_PASS
+      - source: OLLAMA_BASE_URL
+        target: OLLAMA_HOST
+        transform: internal_url
+
+  GEN_OS-master:
+    env_path: "GEN_OS-master/.env"
+    description: "Ecosystem master"
+    variables:
+      - source: DB_PASSWORD
+        target: DB_PASSWORD
+      - source: MINIO_ROOT_USER
+        target: MINIO_USER
+      - source: MINIO_ROOT_PASSWORD
+        target: MINIO_PASSWORD
+
+  GEN_OS-master-infra:
+    env_path: "GEN_OS-master/infrastructure/.env"
+    description: "Docker compose infrastructure"
+    variables:
+      - source: DB_PASSWORD
+        target: DB_PASSWORD
+      - source: MINIO_ROOT_USER
+        target: MINIO_USER
+      - source: MINIO_ROOT_PASSWORD
+        target: MINIO_PASSWORD
+
+  G_MIRA:
+    env_path: "C:/AG/hospital/G_MIRA/.env"
+    description: "Plataforma Clínica MIRA"
+    variables:
+      - source: PROXMOX_HOST
+        target: PROXMOX_HOST
+      - source: PROXMOX_TOKEN
+        target: PROXMOX_TOKEN
+      - source: PROXMOX_NODE
+        target: PROXMOX_NODE
+      - source: CLOUDFLARE_ZONE_ID
+        target: CLOUDFLARE_ZONE_ID
+      - source: CLOUDFLARE_API_TOKEN
+        target: CLOUDFLARE_API_TOKEN

@@ -1,0 +1,383 @@
+# ============================================================
+# configs/services.yml — Single Source of Truth
+# Registro canónico de todos los servicios GEN_OS
+#
+# REGLA: Al agregar, quitar o modificar un servicio, editar
+# este archivo y ejecutar: python scripts/sync_service_catalog.py
+# Esto regenera verify-services.sh y docs/SERVICE_CATALOG.md
+#
+# Última actualización: 2026-03-02
+# ============================================================
+
+# ----------------------------------------------------------
+# Core Services
+# ----------------------------------------------------------
+- name: n8n
+  container: n8n
+  category: Core
+  url_external: https://n8n.imedicina.cl
+  port_internal: 3101
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: Workflow automation platform
+
+- name: "MIRA NocoBase"
+  container: ag-nocobase-mira
+  category: Core
+  url_external: https://mira.hospitaldeovalle.cl
+  port_internal: 13003
+  vm: 101
+  domain: hospitaldeovalle.cl
+  version: "1.9.14"
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: "NocoBase para Hospital de Ovalle (migración fichas clínicas)"
+  db_name: nocobase_mira
+
+- name: "MIRA NocoBase (imedicina)"
+  container: ag-nocobase-mira-imed
+  category: Core
+  url_external: https://mira.imedicina.cl
+  port_internal: 13004
+  vm: 101
+  domain: imedicina.cl
+  version: "1.9.14"
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: "NocoBase MIRA replica en Hetzner (mismo v1.9.14 del hospital)"
+  db_name: nocobase_mira_imed
+
+- name: "MIRA2 NocoBase"
+  container: ag-nocobase-mira2
+  category: Core
+  url_external: https://mira2.imedicina.cl
+  port_internal: 13002
+  vm: 101
+  domain: imedicina.cl
+  version: "2.0.6"
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: "NocoBase v2 para Hospital de Ovalle"
+  db_name: nocobase_mira2
+
+- name: "PostgREST/FHIR"
+  container: postgrest
+  category: Core
+  url_external: https://fhir.imedicina.cl
+  port_internal: 3000
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: POSTGREST_JWT
+  description: RESTful API over PostgreSQL (FHIR-aligned)
+
+- name: Gitea
+  container: gitea
+  category: Core
+  url_external: https://gitea.imedicina.cl
+  port_internal: 3200
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: Self-hosted Git server
+
+# ----------------------------------------------------------
+# AI Stack
+# ----------------------------------------------------------
+- name: Ollama
+  container: ollama
+  category: AI
+  url_external: https://ollama.imedicina.cl
+  port_internal: 11434
+  vm: 100
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: null
+  description: Local LLM inference server
+
+- name: Qdrant
+  container: qdrant
+  category: AI
+  url_external: https://qdrant.imedicina.cl
+  port_internal: 6333
+  vm: 100
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: null
+  description: Vector database for embeddings
+
+- name: Flowise
+  container: flowise
+  category: AI
+  url_external: https://flowise.imedicina.cl
+  port_internal: 3100
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: FLOWISE_CREDENTIALS
+  description: Visual AI workflow builder
+
+- name: Langfuse
+  container: ag-langfuse-web
+  category: AI
+  url_external: https://langfuse.imedicina.cl
+  port_internal: 3400
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: LANGFUSE_KEYS
+  description: LLM observability and tracing
+
+# ----------------------------------------------------------
+# Monitoring
+# ----------------------------------------------------------
+- name: Grafana
+  container: grafana
+  category: Monitoring
+  url_external: https://grafana.imedicina.cl
+  port_internal: 3030
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GRAFANA_ADMIN
+  description: Metrics dashboards and visualization
+
+- name: "Uptime Kuma"
+  container: uptime-kuma
+  category: Monitoring
+  url_external: https://uptime.imedicina.cl
+  port_internal: 3002
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: Service uptime monitoring
+
+- name: Prometheus
+  container: prometheus
+  category: Monitoring
+  url_external: https://prometheus.imedicina.cl
+  port_internal: 9090
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: null
+  description: Metrics collection and alerting
+
+# ----------------------------------------------------------
+# Management
+# ----------------------------------------------------------
+- name: Portainer
+  container: portainer
+  category: Management
+  url_external: https://portainer.imedicina.cl
+  port_internal: 9443
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: PORTAINER_ADMIN
+  description: Docker container management UI
+
+- name: Dozzle
+  container: dozzle
+  category: Management
+  url_external: https://dozzle.imedicina.cl
+  port_internal: 8888
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: null
+  description: Real-time Docker log viewer
+
+- name: CloudBeaver
+  container: cloudbeaver
+  category: Management
+  url_external: https://cloudbeaver.imedicina.cl
+  port_internal: 8978
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: Web-based database management
+
+- name: MinIO
+  container: minio
+  category: Management
+  url_external: https://minio.imedicina.cl
+  port_internal: 9001
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: MINIO_CREDENTIALS
+  description: S3-compatible object storage
+
+# ----------------------------------------------------------
+# Apps
+# ----------------------------------------------------------
+- name: Node-RED
+  container: nodered
+  category: Apps
+  url_external: https://nodered.imedicina.cl
+  port_internal: 1880
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: Flow-based IoT/automation tool
+
+- name: Saltcorn
+  container: saltcorn
+  category: Apps
+  url_external: https://saltcorn.imedicina.cl
+  port_internal: 3003
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: No-code application builder
+
+- name: DHIS2
+  container: dhis2
+  category: Apps
+  url_external: https://dhis2.imedicina.cl
+  port_internal: 8080
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: Health information management system
+
+- name: "Code Server"
+  container: ag-code-server
+  category: Apps
+  url_external: https://code.imedicina.cl
+  port_internal: 8443
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: CODE_SERVER_PASSWORD
+  description: VS Code in the browser
+
+- name: "SpiffArena"
+  container: ag-spiff-frontend
+  category: Apps
+  url_external: https://flujos.imedicina.cl
+  port_internal: 8201
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: SPIFF_CREDENTIALS
+  description: "BPMN workflow engine (SpiffWorkflow) — modelado y ejecucion de procesos"
+  extra_containers:
+    - ag-spiff-backend
+    - ag-spiff-connector
+
+# ----------------------------------------------------------
+# MIRA Clínica
+# ----------------------------------------------------------
+- name: "MIRA UI (Frontend)"
+  container: hpo-nginx
+  category: Apps
+  url_external: https://hpo.sscocquimbo.cl
+  port_internal: 80
+  vm: 101
+  domain: sscocquimbo.cl
+  version: latest
+  deployed: true
+  credentials_ref: null
+  description: "Frontend de MIRA Hospital Ovalle"
+
+- name: "MIRA Core (FHIR+Keycloak)"
+  container: hpo-hapi-fhir
+  category: Apps
+  url_external: https://hpo.sscocquimbo.cl/fhir
+  port_internal: 8080
+  vm: 101
+  domain: sscocquimbo.cl
+  version: "7.4.0"
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: "Servidor HAPI FHIR de MIRA"
+  extra_containers:
+    - hpo-keycloak
+    - hpo-postgres
+
+# ----------------------------------------------------------
+# Dev / New Services
+# ----------------------------------------------------------
+- name: "NocoBase (dev)"
+  container: nocobase
+  category: Dev
+  url_external: https://nocobase.imedicina.cl
+  port_internal: 13000
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: NOCOBASE_CREDENTIALS
+  description: NocoBase development/sandbox instance
+  db_name: nocobase
+
+- name: Dify
+  container: ag-dify-web
+  category: Dev
+  url_external: https://dify.imedicina.cl
+  port_internal: 3401
+  vm: 101
+  domain: imedicina.cl
+  version: latest
+  deployed: true
+  credentials_ref: GLOBAL_ADMIN
+  description: AI application development platform
+  extra_containers:
+    - ag-dify-api
+    - ag-dify-worker
+
+- name: ClickHouse
+  container: ag-clickhouse
+  category: Dev
+  url_external: null
+  port_internal: 8123
+  vm: 101
+  domain: null
+  version: latest
+  deployed: true
+  credentials_ref: CLICKHOUSE_PASSWORD
+  description: OLAP database (Langfuse analytics backend)
+
+# ----------------------------------------------------------
+# Infrastructure
+# ----------------------------------------------------------
+- name: Proxmox
+  container: null
+  category: Infrastructure
+  url_external: https://proxmox-hetzner.imedicina.cl
+  port_internal: 8006
+  vm: host
+  domain: imedicina.cl
+  version: "8.x"
+  deployed: true
+  credentials_ref: PROXMOX_TOKEN
+  description: Hypervisor management (bare-metal host)
